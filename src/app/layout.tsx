@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, DM_Serif_Display, Manrope } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/landing/Navbar";
-import Footer from "@/components/layout/Footer";
 import Providers from "./providers";
 
 const geistSans = Geist({
@@ -32,9 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${dmSerif.variable} ${manrope.variable}  dark h-full antialiased relative`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
         <Providers>{children}</Providers>
-        <Footer />
       </body>
     </html>
   );
