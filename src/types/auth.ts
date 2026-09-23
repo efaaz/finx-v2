@@ -16,3 +16,25 @@ export interface SignupResponse {
     };
   };
 }
+export interface SigninResponse {
+  success: boolean;
+  message: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface CurrentUser {
+  _id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+export interface CurrentUserResponse {
+  success: boolean;
+  data: CurrentUser;
+  message: string;
+}

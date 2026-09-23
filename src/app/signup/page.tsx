@@ -25,6 +25,7 @@ import { AxiosError } from "axios";
 import { type SignupResponse } from "@/types/auth";
 import { api } from "@/lib/api/client";
 import { toast } from "@/components/ui/toast";
+import { useGoogleLogin } from "@react-oauth/google";
 interface ApiError {
   message?: string;
 }
@@ -67,6 +68,28 @@ export default function SignUpPage() {
   const onSubmit = (data: SignupInput) => {
     signupMutation.mutate(data);
   };
+
+  const googleSignup = useGoogleLogin({
+  flow: "auth-code",
+
+  onSuccess: async (codeResponse) => {
+    try {
+      const response = await api.post("/auth/users/google-signin", {
+        code: codeResponse.code,
+      });
+
+      console.log(response.data);
+
+      router.replace("/dashboard");
+    } catch (error) {
+      console.error("Google signup failed:", error);
+    }
+  },
+
+  onError: () => {
+    console.error("Google authorization failed");
+  },
+});
 
   const serverError = signupMutation.error?.response?.data?.message;
 
@@ -168,13 +191,20 @@ export default function SignUpPage() {
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={form.formState.isSubmitting}
+                    disabled={signupMutation.isPending}
                   >
                     {form.formState.isSubmitting
                       ? "Creating account..."
                       : "Create Account"}
                   </Button>
-
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full mt-2"
+                    onClick={() => googleSignup()}
+                  >
+                    Continue with Google
+                  </Button>
                   <FieldDescription className="text-center">
                     Already have an account?{" "}
                     <Link
