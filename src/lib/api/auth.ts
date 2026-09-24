@@ -6,6 +6,7 @@ interface RetryableRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
+
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
