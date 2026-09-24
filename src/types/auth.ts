@@ -1,9 +1,11 @@
+import { CurrencyCode } from "./currency";
+
 export interface User {
   id: string;
   name: string;
   email: string;
   avatar?: string | null;
-  refreshToken?: string | null;
+  defaultCurrency: CurrencyCode;
 }
 export interface SignupResponse {
   success: boolean;

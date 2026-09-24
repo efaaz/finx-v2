@@ -1,4 +1,5 @@
 import { CurrentUser, CurrentUserResponse } from "@/types/auth";
+import { CurrencyCode } from "@/types/currency";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 interface RetryableRequestConfig extends AxiosRequestConfig {
@@ -75,6 +76,19 @@ api.interceptors.response.use(
     }
   },
 );
+
+export async function updateDefaultCurrency(
+  currency: CurrencyCode,
+) {
+  const response = await api.patch(
+    "/users/me/currency",
+    {
+      currency,
+    },
+  );
+
+  return response.data.data;
+}
 
 export const getCurrentUser = async (): Promise<CurrentUser> => {
   const response =

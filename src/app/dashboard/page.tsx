@@ -14,11 +14,17 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const { data: user, isPending, isError } = useCurrentUser();
+  const router = useRouter();
+      const handleLogout = () => {
+      logout();
+      router.replace("/login");
+      }
 
-  if (isPending) {
+  if (false) {
     return (
       <section>
         <div className="mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -81,16 +87,16 @@ export default function DashboardPage() {
     );
   }
 
-  // if (isError) {
-  //   return null;
-  // }
+  if (false) {
+    return <><h1 className="">Error</h1></>;
+  }
 
   return (
     <main>
       <div className="flex items-center px-6 justify-between">
         <h1>Welcome, {user?.name ?? "User"}</h1>
         <Button
-          onClick={() => logout()}
+          onClick={() => handleLogout()}
           variant="destructive"
           className="hover:cursor-pointer"
         >
