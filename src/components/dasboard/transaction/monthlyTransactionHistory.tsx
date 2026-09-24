@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -5,8 +6,25 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { useThisMonthSummary } from "@/hooks/useTransections";
+import { formatCurrency } from "@/lib/currency";
 
 const MonthlyTransactionHistory = () => {
+  const { data, isLoading, isError, error } = useThisMonthSummary();
+  const currencyCode = "BDT";
+  const transactions = data?.data.spendingByCategory ?? [];
+  const totalIncome = data?.data.summary.totalIncome ?? 0;
+  const totalSpending = data?.data.summary.totalSpending ?? 0;
+  const netIncome = data?.data.summary.netIncome ?? 0;
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // if (isError) {
+  //   return <div>{error.message}</div>;
+  // }
+
   return (
     <section className="grid gap-4 lg:grid-cols-2">
       <Card className="border-border/80 bg-card">
@@ -19,30 +37,16 @@ const MonthlyTransactionHistory = () => {
         </CardHeader>
 
         <CardContent>
-          <div className="space-y-5">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Food</span>
+          <div className="space-y-3">
+            {transactions.length > 0 ? transactions.map((transaction) => (
+              <div key={transaction.categoryId} className="flex items-center border-b justify-between">
+                <span className="text-sm md:text-lg">{transaction.categoryName}</span>
 
-              <span className="font-semibold tabular-nums">৳8,500</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Shopping</span>
-
-              <span className="font-semibold tabular-nums">৳6,200</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Transport</span>
-
-              <span className="font-semibold tabular-nums">৳4,850</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Bills</span>
-
-              <span className="font-semibold tabular-nums">৳7,500</span>
-            </div>
+                <span className="font-semibold text-sm md:text-lg tabular-nums">
+                  {formatCurrency(transaction.totalSpending, currencyCode)}
+                </span>
+              </div>
+            )) : <p className="text-sm md:text-lg">You have no spending this month.</p>}
           </div>
         </CardContent>
       </Card>
@@ -62,7 +66,9 @@ const MonthlyTransactionHistory = () => {
               <div className="mb-2 flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Income</span>
 
-                <span className="font-semibold">৳75,000</span>
+                <span className="font-semibold text-sm md:text-lg">
+                  {formatCurrency(totalIncome, currencyCode)}
+                </span>
               </div>
 
               <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -74,7 +80,9 @@ const MonthlyTransactionHistory = () => {
               <div className="mb-2 flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Spending</span>
 
-                <span className="font-semibold">৳42,350</span>
+                <span className="font-semibold text-sm md:text-lg">
+                  {formatCurrency(totalSpending, currencyCode)}
+                </span>
               </div>
 
               <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -86,7 +94,7 @@ const MonthlyTransactionHistory = () => {
               <p className="text-sm text-muted-foreground">Net this month</p>
 
               <p className="mt-1 font-sans text-2xl font-semibold tabular-nums">
-                +৳32,650
+               +{formatCurrency(netIncome, currencyCode)}
               </p>
             </div>
           </div>

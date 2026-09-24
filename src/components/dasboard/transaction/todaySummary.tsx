@@ -1,4 +1,6 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import { useTodayTransactions } from "@/hooks/useTransections";
 import {
   Card,
   CardContent,
@@ -14,8 +16,32 @@ import {
   Wallet,
   ChevronRight,
 } from "lucide-react";
+import { formatTransactionDate } from "@/lib/formateHelper";
 
 const TodaySummary = () => {
+  const { data, isLoading, isError, error } = useTodayTransactions();
+
+  if (isLoading) {
+    return (
+      <>
+        <div>
+          <h2 className="font-sans text-lg font-semibold">Today</h2>
+
+          <p className="text-sm text-muted-foreground">September 24, 2026</p>
+        </div>
+        Loading...
+      </>
+    );
+  }
+
+  //   if (isError) {
+  //     return <div>{error.message}</div>;
+  //   }
+
+  const transactions = data?.data.transactions ?? [];
+  const totalIncome = data?.data.totalIncome ?? 0;
+  const totalSpending = data?.data.totalSpending ?? 0;
+  const netIncome = data?.data.netIncome ?? 0;
   return (
     <>
       <section className="space-y-4">
@@ -33,7 +59,7 @@ const TodaySummary = () => {
                 <p className="text-sm text-muted-foreground">Income</p>
 
                 <p className="mt-1 font-sans text-2xl font-semibold tabular-nums">
-                  {formatCurrency(125000, "BDT")}
+                  {formatCurrency(totalIncome, "BDT")}
                 </p>
               </div>
 
@@ -50,7 +76,7 @@ const TodaySummary = () => {
                 <p className="text-sm text-muted-foreground">Spending</p>
 
                 <p className="mt-1 font-sans text-2xl font-semibold tabular-nums">
-                  {formatCurrency(2450, "BDT")}
+                  {formatCurrency(totalSpending, "BDT")}
                 </p>
               </div>
 
@@ -67,7 +93,7 @@ const TodaySummary = () => {
                 <p className="text-sm text-muted-foreground">Net</p>
 
                 <p className="mt-1 font-sans text-2xl font-semibold tabular-nums">
-                  {formatCurrency(6050, "BDT")}
+                  {formatCurrency(netIncome, "BDT")}
                 </p>
               </div>
 
@@ -82,7 +108,7 @@ const TodaySummary = () => {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-sans text-lg">
-              Today's transactions
+              Recent transactions
             </CardTitle>
 
             <CardDescription>Your latest activity today.</CardDescription>
@@ -96,72 +122,65 @@ const TodaySummary = () => {
 
         <CardContent>
           <div className="divide-y divide-border">
-            {/* Transaction 1 */}
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-500/10">
-                <ArrowUpRight className="size-4 text-red-400" />
-              </div>
+            {transactions.length > 0 ? (
+              transactions.map((transaction) => {
+                const isIncome = transaction.type === "income";
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">Lunch</p>
+                return (
+                  <div
+                    key={transaction._id}
+                    className="flex items-center gap-4 py-4"
+                  >
+                    {/* Transaction icon */}
+                    <div
+                      className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
+                        isIncome ? "bg-emerald-500/10" : "bg-red-500/10"
+                      }`}
+                    >
+                      {isIncome ? (
+                        <ArrowDownLeft className="size-4 text-emerald-400" />
+                      ) : (
+                        <ArrowUpRight className="size-4 text-red-400" />
+                      )}
+                    </div>
 
-                <p className="text-sm text-muted-foreground">Food · 1:20 PM</p>
-              </div>
+                    {/* Transaction info */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">
+                        {transaction.categoryId.categoryName ||
+                          transaction.note}
+                      </p>
 
-              <p className="font-sans font-semibold tabular-nums text-red-400">
-                {formatCurrency(500, "BDT")}
-              </p>
+                      <p className="text-sm text-muted-foreground">
+                        {transaction.note} ·{" "}
+                        {formatTransactionDate(transaction.date)}
+                      </p>
+                    </div>
 
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </div>
+                    {/* Amount */}
+                    <p
+                      className={`font-sans font-semibold tabular-nums ${
+                        isIncome ? "text-emerald-400" : "text-red-400"
+                      }`}
+                    >
+                      {isIncome ? "+" : "-"}
+                      {formatCurrency(transaction.amount, transaction.currency)}
+                    </p>
 
-            {/* Transaction 2 */}
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-500/10">
-                <ArrowUpRight className="size-4 text-red-400" />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">Uber</p>
-
+                    {/* Action */}
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="size-4" />
+                    </Button>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="py-10 text-center">
                 <p className="text-sm text-muted-foreground">
-                  Transport · 11:40 AM
+                  No transactions today.
                 </p>
               </div>
-
-              <p className="font-sans font-semibold tabular-nums text-red-400">
-                {formatCurrency(300, "BDT")}
-              </p>
-
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </div>
-
-            {/* Transaction 3 */}
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
-                <ArrowDownLeft className="size-4 text-emerald-400" />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">Monthly salary</p>
-
-                <p className="text-sm text-muted-foreground">
-                  Salary · 9:00 AM
-                </p>
-              </div>
-
-              <p className="font-sans font-semibold tabular-nums text-emerald-400">
-                {formatCurrency(8000, "BDT")}
-              </p>
-
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
