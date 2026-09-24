@@ -1,4 +1,5 @@
 import { CurrencyCode } from "./currency";
+import { TransactionCategory } from "./transaction";
 
 export interface User {
   id: string;
@@ -33,6 +34,8 @@ export interface CurrentUser {
   name: string;
   email: string;
   avatar?: string;
+  defaultCurrency: CurrencyCode;
+  categories: TransactionCategory[];
 }
 
 export interface CurrentUserResponse {

@@ -17,7 +17,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const { data: user, isPending, isError } = useCurrentUser();
+  const { data, isPending, isError } = useCurrentUser();
+  console.log(data);
   const router = useRouter();
       const handleLogout = () => {
       logout();
@@ -94,7 +95,7 @@ export default function DashboardPage() {
   return (
     <main>
       <div className="flex items-center px-6 justify-between">
-        <h1>Welcome, {user?.name ?? "User"}</h1>
+        <h1>Welcome, {data?.name ?? "User"}</h1>
         <Button
           onClick={() => handleLogout()}
           variant="destructive"
