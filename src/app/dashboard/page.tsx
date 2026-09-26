@@ -206,7 +206,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardDescription>This Month&apos;s Spending</CardDescription>
 
-            <CardTitle className="font-sans text-2xl font-semibold tabular-nums">
+            <CardTitle className="font-sans text-2xl text-rose-500 font-semibold tabular-nums">
               {formatCurrency(totalSpending, "BDT")}
             </CardTitle>
           </CardHeader>
@@ -329,7 +329,7 @@ export default function DashboardPage() {
                         </p>
                       </div>
 
-                      <span className="shrink-0 text-sm font-medium tabular-nums">
+                      <span className="shrink-0 text-rose-500 text-sm font-medium tabular-nums">
                         {formatCurrency(category.totalSpending, "BDT")}
                       </span>
                     </div>
@@ -356,7 +356,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardDescription>Monthly Spending</CardDescription>
 
-            <CardTitle className="text-xl">
+            <CardTitle className="text-xl text-red-500">
               {formatCurrency(totalSpending, "BDT")}
             </CardTitle>
           </CardHeader>

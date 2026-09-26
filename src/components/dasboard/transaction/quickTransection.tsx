@@ -27,11 +27,12 @@ import { createTransaction } from "@/lib/api/transactions";
 import { type PostTransaction } from "@/types/transaction";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { toast } from "@/components/ui/toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const QuickTransection = () => {
   const queryClient = useQueryClient();
 
-  const { data: user, isPending } = useCurrentUser();
+  const { data: user, isLoading } = useCurrentUser();
 
   const form = useForm<CreateTransactionInput>({
     resolver: zodResolver(CreateTransactionSchema),
@@ -91,8 +92,30 @@ const QuickTransection = () => {
     createTransactionMutation.mutate(data);
   };
 
-  if (isPending || !user) {
-    return <>Loading...</>;
+  if (isLoading || !user) {
+    return (
+      <>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-44" />
+            <Skeleton className="mt-2 h-4 w-64" />
+          </CardHeader>
+
+          <CardContent className="space-y-5">
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              </div>
+              
+              <Skeleton className="h-8 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      </>
+    );
   }
 
   const currencySymbol =

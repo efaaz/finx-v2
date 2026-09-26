@@ -1,5 +1,4 @@
 import { Plus } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,21 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { currencies } from "@/types/currency";
 import TodaySummary from "@/components/dasboard/transaction/todaySummary";
 import TransactionHistory from "@/components/dasboard/transaction/transactionHistory";
 import MonthlyTransactionHistory from "@/components/dasboard/transaction/monthlyTransactionHistory";
 import QuickTransection from "@/components/dasboard/transaction/quickTransection";
 
 export default function TransactionsPage() {
-  const user = {
-    id: "string",
-    name: "efaz",
-    email: "string",
-    avatar: "string",
-    defaultCurrency: "BDT",
-  };
   return (
     <div className="space-y-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

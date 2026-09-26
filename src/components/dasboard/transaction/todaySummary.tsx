@@ -17,6 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { formatTransactionDate } from "@/lib/formateHelper";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TodaySummary = () => {
   const { data, isLoading, isError, error } = useTodayTransactions();
@@ -29,7 +30,60 @@ const TodaySummary = () => {
 
           <p className="text-sm text-muted-foreground">September 24, 2026</p>
         </div>
-        Loading...
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-44" />
+              <Skeleton className="mt-2 h-4 w-64" />
+            </CardHeader>
+
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Skeleton className="h-14 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-44" />
+              <Skeleton className="mt-2 h-4 w-64" />
+            </CardHeader>
+
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Skeleton className="h-14 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-44" />
+              <Skeleton className="mt-2 h-4 w-64" />
+            </CardHeader>
+
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Skeleton className="h-14 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <Card>
+            <CardHeader>
+              <div className="flex justify-between">
+                <Skeleton className="h-5 w-44" />
+                <Skeleton className="h-5 w-10" />
+              </div>
+              <Skeleton className="mt-2 h-4 w-64" />
+            </CardHeader>
+
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Skeleton className="h-14 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card></Card>
       </>
     );
   }
