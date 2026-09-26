@@ -63,7 +63,7 @@ export default function FeaturesPage() {
 
       {/* Feature Grid */}
       <section className="mx-auto max-w-7xl px-6 pb-24 sm:px-8 lg:px-12">
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-2">
           {features.map((feature, index) => {
             const Icon = feature.icon;
 
@@ -109,7 +109,7 @@ export default function FeaturesPage() {
                       <span className="size-1.5 rounded-full bg-muted-foreground/10" />
                     </div>
 
-                    <div className="relative aspect-16/10 overflow-hidden">
+                    <div className="relative aspect-19/10 overflow-hidden">
                       <Image
                         src={feature.screenshot}
                         alt={`${feature.title} screenshot`}

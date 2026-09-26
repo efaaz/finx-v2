@@ -4,7 +4,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dasboard/app-sidebar";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Finx | Dashboard",
+  description: "Finx is a finance management app that helps you track your income and expenses, manage your budget, and achieve your financial goals.",
+};
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>

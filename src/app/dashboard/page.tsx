@@ -206,7 +206,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardDescription>This Month&apos;s Spending</CardDescription>
 
-            <CardTitle className="font-sans text-2xl text-rose-500 font-semibold tabular-nums">
+            <CardTitle className="font-sans text-2xl font-semibold tabular-nums">
               {formatCurrency(totalSpending, "BDT")}
             </CardTitle>
           </CardHeader>

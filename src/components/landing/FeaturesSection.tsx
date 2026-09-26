@@ -46,7 +46,7 @@ export default function FeaturesSection() {
             >
               <Grid size={20} />
 
-              <p className="text-base font-sans font-bold text-neutral-800 dark:text-white relative z-20">
+              <p className="text-base md:text-lg font-sans font-bold text-neutral-800 dark:text-white relative z-20">
                 {feature.title}
               </p>
 
@@ -63,34 +63,34 @@ export default function FeaturesSection() {
 
 const grid = [
   {
-    title: "Real-Time Expense Tracking",
+    title: "Transaction Management",
     description:
-      "Monitor every transaction in real time with interactive charts. Gain a clear picture of where your money is going daily, weekly, or monthly.",
+      "Add and manage income and spending transactions with categories, notes, dates, and currency information. Keep your financial records organized and easy to review.",
   },
   {
-    title: "Export & AI-Powered Reports",
+    title: "Financial Dashboard & Analytics",
     description:
-      "Generate detailed financial reports with a single click. Export transactions as Excel files and get AI-driven summaries for smarter decision-making.",
+      "Get a clear overview of your finances with monthly income, spending, and net income summaries alongside category-wise spending insights.",
   },
   {
-    title: "Smart Notifications & Alerts",
+    title: "Category Management",
     description:
-      "Get instant alerts for unusual spending, bill reminders, and savings milestones. Stay on top of your finances with proactive insights and timely updates.",
+      "Create custom income and spending categories to organize your transactions. Default categories remain protected while user-created categories can be managed separately.",
   },
   {
-    title: "Real-Time Multi-Currency Support",
+    title: "Monthly Budget Tracking",
     description:
-      "Effortlessly manage transactions in multiple currencies with real-time exchange rate updates. Perfect for travelers, freelancers, and global businesses.",
+      "Set spending limits for individual categories and track actual spending against each budget. Monitor usage, remaining amounts, and identify categories that are approaching or exceeding their limits.",
   },
   {
-    title: "Mobile-Optimized Dashboard",
+    title: "Account & Security Settings",
     description:
-      "Access your financial insights anytime, anywhere with our fully responsive dashboard. Enjoy a smooth, mobile-first experience that keeps you updated on the go.",
+      "Manage your account from one place by updating your name and email, changing your password with current-password verification, and updating your profile picture.",
   },
   {
-    title: "Detailed Spending Reports",
+    title: "Help & Issue Reporting",
     description:
-      "Generate in-depth, downloadable reports with just one click. These reports provide clear insights into your spending patterns, helping you make smarter financial decisions.",
+      "Report bugs and account issues with detailed descriptions, categories, and priorities. Track previously submitted reports and their current status while accessing common troubleshooting information.",
   },
 ];
 
@@ -134,10 +134,7 @@ export function GridPattern({
           x={x}
           y={y}
         >
-          <path
-            d={`M.5 ${height}V.5H${width}`}
-            fill="none"
-          />
+          <path d={`M.5 ${height}V.5H${width}`} fill="none" />
         </pattern>
       </defs>
 

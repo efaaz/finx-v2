@@ -1,5 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { ArrowUpRight, Code2, ExternalLink, Layers3 } from "lucide-react";
 import { RiDoubleQuotesL, RiDoubleQuotesR } from "react-icons/ri";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { Button } from "@/components/ui/button";
 
 function page() {
   return (
@@ -65,6 +70,89 @@ function page() {
             </p>
           </div>
         </div>
+
+        <section className="relative overflow-hidden mt-8 space-y-4 rounded-3xl border border-white/8 bg-card/30">
+          {/* Decorative background */}
+
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" />
+
+          <div className="pointer-events-none absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-cyan-500/5 blur-3xl" />
+
+          <div className="relative p-6 md:p-8 lg:p-10">
+            <div className="mb-8 max-w-2xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/5 px-3 py-1 text-xs font-medium text-violet-300">
+                <Code2 className="h-3.5 w-3.5" />
+                Behind FinX
+              </div>
+
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Curious about what powers FinX?
+              </h2>
+
+              <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">
+                Explore the engineering behind the platform or get to know the
+                developer who designed and built it from the ground up.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Project card */}
+
+              <div className="group rounded-2xl border border-white/[0.07] bg-black/40 p-5 transition duration-300 hover:border-violet-500/30 hover:bg-black/60 md:p-6">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-violet-500/20 bg-violet-500/10 text-violet-400">
+                  <Layers3 className="h-5 w-5" />
+                </div>
+
+                <h3 className="text-lg font-semibold">How FinX is built</h3>
+
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Explore the architecture, technology, features, and
+                  engineering decisions behind FinX.
+                </p>
+
+                <Button className="mt-6 flex bg-violet-600 hover:bg-violet-500">
+                  <Link
+                    href="https://portfolio-seven-pi-h7lz302cb5.vercel.app/work/FinX"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Explore FinX
+                  </Link>
+                  <ArrowUpRight className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Engineer card */}
+
+              <div className="group rounded-2xl border border-white/[0.07] bg-black/40 p-5 transition duration-300 hover:border-cyan-500/30 hover:bg-black/60 md:p-6">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/10 text-cyan-400">
+                  <ExternalLink className="h-5 w-5" />
+                </div>
+
+                <h3 className="text-lg font-semibold">Meet the engineer</h3>
+
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Learn more about Wasifur Rahman Efaz, the engineer and
+                  developer behind FinX.
+                </p>
+
+                <Button
+                  variant="outline"
+                  className="mt-6 border-white/10 flex bg-transparent hover:bg-white/5"
+                >
+                  <a
+                    href="https://linkedin.com/in/wasifur-rahman-efaz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View LinkedIn
+                  </a>
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
