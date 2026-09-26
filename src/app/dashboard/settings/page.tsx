@@ -93,10 +93,6 @@ function SettingsContent({ user }: SettingsContentProps) {
 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // ---------------------------------------------
-  // Profile form
-  // ---------------------------------------------
-
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -104,10 +100,6 @@ function SettingsContent({ user }: SettingsContentProps) {
       email: user.email,
     },
   });
-
-  // ---------------------------------------------
-  // Password form
-  // ---------------------------------------------
 
   const passwordForm = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -117,11 +109,6 @@ function SettingsContent({ user }: SettingsContentProps) {
       confirmPassword: "",
     },
   });
-
-  // ---------------------------------------------
-  // Update name + email
-  // ---------------------------------------------
-
   const updateProfileMutation = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
       const response = await api.patch(API.updateProfile, values);
@@ -153,10 +140,6 @@ function SettingsContent({ user }: SettingsContentProps) {
       );
     },
   });
-
-  // ---------------------------------------------
-  // Update profile picture
-  // ---------------------------------------------
 
   const updateAvatarMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -204,10 +187,6 @@ function SettingsContent({ user }: SettingsContentProps) {
     },
   });
 
-  // ---------------------------------------------
-  // Change password
-  // ---------------------------------------------
-
   const changePasswordMutation = useMutation({
     mutationFn: async (values: PasswordFormValues) => {
       const response = await api.patch(API.changePassword, {
@@ -235,6 +214,7 @@ function SettingsContent({ user }: SettingsContentProps) {
     },
 
     onError: (error: any) => {
+      console.error("Error changing password:", error);
       setPasswordMessage(
         error?.response?.data?.message || "Failed to change password.",
       );
