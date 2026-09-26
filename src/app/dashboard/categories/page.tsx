@@ -47,54 +47,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
 import { Badge } from "@/components/ui/badge";
-
-// ==================================================
-// Types
-// ==================================================
-
-type CategoryType = "income" | "spending";
-
-type Category = {
-  _id: string;
-  categoryName: string;
-  type: CategoryType;
-  userId: string | null;
-};
-
-type CategoriesResponse = {
-  success: boolean;
-  data: Category[];
-};
-
-type CategoryFormValues = {
-  categoryName: string;
-  type: CategoryType;
-};
-
-// ==================================================
-// Validation
-// ==================================================
-
-const categorySchema = z.object({
-  categoryName: z
-    .string()
-    .trim()
-    .min(2, "Category name must be at least 2 characters")
-    .max(30, "Category name must be less than 30 characters"),
-
-  type: z.enum(["income", "spending"]),
-});
-
-// ==================================================
-// API
-// ==================================================
+import {
+  Category,
+  CategoryFormValues,
+  CategoriesResponse,
+} from "@/types/categories";
+import { categorySchema } from "@/Schema/categoriesSchema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const API = {
-  getCategories: "/categories",
-  createCategory: "/categories",
-  deleteCategory: (id: string) => `/categories/${id}`,
+  getCategories: "/categories/getUserCreatedCategories",
+  createCategory: "/categories/createCategory",
+  deleteCategory: (id: string) => `/categories/delete/${id}`,
 };
 
 // ==================================================
@@ -108,19 +73,15 @@ export default function CategoriesPage() {
     null,
   );
 
-  // ----------------------------------------------
-  // Get categories
-  // ----------------------------------------------
-
   const { data, isPending, isError } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       const response = await api.get<CategoriesResponse>(API.getCategories);
-
+      console.log("Fetched categories:", response);
       return response.data.data;
     },
   });
-
+  console.log("Categories data:", data);
   // ----------------------------------------------
   // Form
   // ----------------------------------------------
@@ -176,23 +137,11 @@ export default function CategoriesPage() {
     },
   });
 
-  // ----------------------------------------------
-  // Separate categories
-  // ----------------------------------------------
+  const incomeCategories =
+    data?.categories?.filter((category) => category.type === "income") ?? [];
 
-  const incomeCategories = useMemo(
-    () => data?.filter((category) => category.type === "income") ?? [],
-    [data],
-  );
-
-  const spendingCategories = useMemo(
-    () => data?.filter((category) => category.type === "spending") ?? [],
-    [data],
-  );
-
-  // ----------------------------------------------
-  // Submit
-  // ----------------------------------------------
+  const spendingCategories =
+    data?.categories?.filter((category) => category.type === "spending") ?? [];
 
   const handleSubmit = (values: CategoryFormValues) => {
     createCategoryMutation.mutate(values);
@@ -348,13 +297,38 @@ export default function CategoriesPage() {
         {/* ========================================= */}
 
         {isPending ? (
-          <div className="flex min-h-75 items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-violet-400" />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-5 w-44" />
+                <Skeleton className="mt-2 h-4 w-64" />
+              </CardHeader>
+
+              <CardContent className="space-y-5">
+                <div className="space-y-2">
+                  <Skeleton className="h-14 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-5 w-44" />
+                <Skeleton className="mt-2 h-4 w-64" />
+              </CardHeader>
+
+              <CardContent className="space-y-5">
+                <div className="space-y-2">
+                  <Skeleton className="h-14 w-full" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         ) : isError ? (
           <Card className="border-border bg-card">
             <CardContent className="flex min-h-50 items-center justify-center">
-              <p className="text-sm text-red-400">Failed to load categories.</p>
+              <p className="text-sm text-muted-foreground">
+                Failed to load categories. Please try again later.
+              </p>
             </CardContent>
           </Card>
         ) : (
