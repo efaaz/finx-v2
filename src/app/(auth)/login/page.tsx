@@ -165,7 +165,7 @@ export default function LoginForm() {
                       className="w-full"
                       disabled={signinMutation.isPending}
                     >
-                      {form.formState.isSubmitting ? "Loging in..." : "Login"}
+                      {signinMutation.isPending ? "Loging in pleasee wait..." : "Login"}
                     </Button>
                     <Button
                       variant="outline"
