@@ -4,6 +4,10 @@ FinX is a personal finance management web application built around a simple idea
 
 The project is designed as a practical full-stack application rather than a small CRUD demonstration. The goal is to combine authentication, financial record management, database design, API development, validation, server-state management, analytics, and a user-focused interface into one product. I am also intentionally keeping the architecture understandable and maintainable instead of introducing abstractions or libraries only for the sake of complexity.
 
+Live Website: [here](https://finx-fawn.vercel.app)  
+Client source code: [here](https://github.com/efaaz/finx-v2)  
+server source code: [here](https://github.com/efaaz/finance-management-server)
+
 ## Overview
 
 FinX allows users to keep a structured record of their day-to-day financial activity, including income and expenses. Transactions can be organized using categories, making it possible to move from simple record keeping to useful financial analysis. The dashboard is intended to act as the starting point after login, giving users a quick view of the current financial period through income, spending, net cash flow, savings-related information, and category-level spending. Additional areas of the application are designed around budgeting, financial records, and support, with the long-term goal of making FinX useful as an everyday personal finance tool rather than simply a place to store transaction data.
@@ -91,12 +95,13 @@ src/
 ├── model/
 ├── routes/
 ├── utils/
-├── app.js
-├── constants.js
+├── constant.js
+├── dev.js
+├── ExpressApp.js
 └── index.js
 ```
 
-`app.js` is responsible for configuring the Express application and middleware, while `index.js` acts as the server entry point. Route modules expose the API endpoints, controllers contain request-level business logic, models define the database representation, and utility and middleware modules provide reusable application-level functionality.
+For development `EpressApp.js` is responsible for configuring the Express application and middleware, while `dev.js` acts as the server entry point. but in production deployment `index.js` is the entry point of the application. Route modules expose the API endpoints, controllers contain request-level business logic, models define the database representation, and utility and middleware modules provide reusable application-level functionality.
 
 ## Tech Stack
 
@@ -289,14 +294,14 @@ Another long-term goal is to make the analytics more useful without overwhelming
 
 ## Repository
 
-This repository contains the FinX backend/API.
+This repository contains the FinX client/Next.js.
 
-The frontend is maintained separately as a Next.js application.
+The backend is maintained separately repository as a Express.js application.
 
 ```text
 FinX
-├── server-side    → Express.js + MongoDB backend
-└── client-side    → Next.js + TypeScript frontend
+├── finance-managemnet-server    → Express.js + MongoDB backend
+└── finx-v2                      → Next.js + TypeScript frontend
 ```
 
 ## License
