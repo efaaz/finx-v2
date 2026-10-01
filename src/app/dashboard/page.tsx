@@ -10,11 +10,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useThisMonthSummary } from "@/hooks/useTransections";
 import { logout } from "@/lib/api/auth";
-
 import {
   ArrowDown,
   ArrowUp,

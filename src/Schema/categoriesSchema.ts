@@ -8,3 +8,5 @@ export const categorySchema = z.object({
 
   type: z.enum(["income", "spending"]),
 });
+
+export type CategoryFormValues = z.infer<typeof categorySchema>;

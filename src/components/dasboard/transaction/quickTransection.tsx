@@ -28,8 +28,14 @@ import { type PostTransaction } from "@/types/transaction";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { toast } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAvailableCategories } from "@/hooks/useAvailableCategories";
 
 const QuickTransection = () => {
+  const {
+  data: categories = [],
+  isPending: isCategoriesLoading,
+  isError: isCategoriesError,
+} = useAvailableCategories();
   const queryClient = useQueryClient();
 
   const { data: user, isLoading } = useCurrentUser();
@@ -222,7 +228,7 @@ const QuickTransection = () => {
                   >
                     <option value="">Select category</option>
 
-                    {user.categories?.map((category) => (
+                    {categories?.map((category) => (
                       <option key={category._id} value={category._id}>
                         {category.categoryName}
                       </option>

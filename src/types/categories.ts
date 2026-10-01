@@ -20,3 +20,17 @@ export type CategoryFormValues = {
   categoryName: string;
   type: CategoryType;
 };
+
+export type ManagedCategory = Category & {
+  isDefault: boolean;
+  isDisabled: boolean;
+};
+
+export type ManageCategoriesResponse = {
+  defaultCategories: ManagedCategory[];
+  userCategories: ManagedCategory[];
+};
+
+export type CategoryResponse = {
+  data: ManageCategoriesResponse;
+};
