@@ -9,7 +9,7 @@ export function useCurrentUser() {
 
     // Don't let Query automatically retry a failed auth request.
     // Our Axios interceptor handles token refresh.
-    retry: false,
+    retry: false, 
 
     // User information doesn't need to be refetched constantly.
     staleTime: 5 * 60 * 1000,

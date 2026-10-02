@@ -57,6 +57,9 @@ const QuickTransection = () => {
     mutationFn: createTransaction,
 
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "overview"],
+      });
       toast.add({
         title: "Transaction added",
         description: "Your transaction has been added successfully.",
