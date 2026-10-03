@@ -26,10 +26,24 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "@/components/ui/toast";
 import { SigninResponse } from "@/types/auth";
+import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+import { useState } from "react";
+const loadingStates = [
+  {
+    text: "Verifying your credentials...",
+  },
+  {
+    text: "Connecting to finx database..",
+  },
+  {
+    text: "Taking you to your dashboard...",
+  },
+];
 interface ApiError {
   message?: string;
 }
 export default function LoginForm() {
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
   const router = useRouter();
 
   const signinMutation = useMutation<
@@ -38,8 +52,6 @@ export default function LoginForm() {
     SigninInput
   >({
     mutationFn: async (data) => {
-      console.log("mutation data:", data);
-
       const response = await api.post<SigninResponse>(
         "/auth/users/login",
         data,
@@ -54,7 +66,18 @@ export default function LoginForm() {
         title: "Logged in successfully",
         description: "You have been successfully logged in.",
       });
+      setIsAuthLoading(false);
       router.replace("/dashboard");
+    },
+    onError: (error) => {
+      setIsAuthLoading(false);
+      console.error("Login failed:", error);
+      toast.add({
+        type: "error",
+        title: "Login failed",
+        description:
+          error.response?.data?.message || "Unable to login. Please try again.",
+      });
     },
   });
 
@@ -65,19 +88,20 @@ export default function LoginForm() {
 
     onSuccess: async (codeResponse) => {
       try {
+        setIsAuthLoading(true);
         const response = await api.post("/auth/users/google-signin", {
           code: codeResponse.code,
         });
 
-        console.log(response.data);
-
         router.replace("/dashboard");
       } catch (error) {
+        setIsAuthLoading(false);
         console.error("Google signup failed:", error);
       }
     },
 
     onError: () => {
+      setIsAuthLoading(false);
       console.error("Google authorization failed");
     },
   });
@@ -90,100 +114,113 @@ export default function LoginForm() {
     mode: "onBlur",
   });
   const handleSubmit = async (data: SigninInput) => {
+    setIsAuthLoading(true);
     signinMutation.mutate(data);
   };
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm ">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center">
-                Login to your account
-              </CardTitle>
-              <CardDescription className="text-center">
-                Enter your email below to login to your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={form.handleSubmit(handleSubmit)}>
-                <FieldGroup>
-                  <Controller
-                    name="email"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+    <>
+      <MultiStepLoader
+        loadingStates={loadingStates}
+        loading={isAuthLoading}
+        duration={1000}
+        loop={true}
+      />
+      <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+        <div className="w-full max-w-sm ">
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">
+                  Login to your account
+                </CardTitle>
+                <CardDescription className="text-center">
+                  Enter your email below to login to your account
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={form.handleSubmit(handleSubmit)}>
+                  <FieldGroup>
+                    <Controller
+                      name="email"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor={field.name}>Email</FieldLabel>
 
-                        <Input
-                          {...field}
-                          id={field.name}
-                          type="email"
-                          placeholder="efaz@example.com"
-                          autoComplete="email"
-                          aria-invalid={fieldState.invalid}
-                        />
+                          <Input
+                            {...field}
+                            id={field.name}
+                            type="email"
+                            placeholder="efaz@example.com"
+                            autoComplete="email"
+                            aria-invalid={fieldState.invalid}
+                          />
 
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                          )}
+                        </Field>
+                      )}
+                    />
+                    <Controller
+                      name="password"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+
+                          <Input
+                            {...field}
+                            id={field.name}
+                            type="password"
+                            placeholder="Enter your password"
+                            autoComplete="new-password"
+                            aria-invalid={fieldState.invalid}
+                          />
+
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                          )}
+                        </Field>
+                      )}
+                    />
+                    {/* Backend error */}
+                    {signinMutation.isError && (
+                      <FieldError>
+                        {serverError ??
+                          "Unable to create your account. Please try again."}
+                      </FieldError>
                     )}
-                  />
-                  <Controller
-                    name="password"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-
-                        <Input
-                          {...field}
-                          id={field.name}
-                          type="password"
-                          placeholder="Enter your password"
-                          autoComplete="new-password"
-                          aria-invalid={fieldState.invalid}
-                        />
-
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    )}
-                  />
-                  {/* Backend error */}
-                  {signinMutation.isError && (
-                    <FieldError>
-                      {serverError ??
-                        "Unable to create your account. Please try again."}
-                    </FieldError>
-                  )}
-                  <Field>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={signinMutation.isPending}
-                    >
-                      {signinMutation.isPending ? "Loging in pleasee wait..." : "Login"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={() => googleSignup()}
-                    >
-                      Login with Google
-                    </Button>
-                    <FieldDescription className="text-center">
-                      Don&apos;t have an account? <Link href="/signup">Sign up</Link>
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-              </form>
-            </CardContent>
-          </Card>
+                    <Field>
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={signinMutation.isPending}
+                      >
+                        {signinMutation.isPending
+                          ? "Loging in pleasee wait..."
+                          : "Login"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => googleSignup()}
+                        disabled={isAuthLoading}
+                      >
+                        Login with Google
+                      </Button>
+                      <FieldDescription className="text-center">
+                        Don&apos;t have an account?{" "}
+                        <Link href="/signup">Sign up</Link>
+                      </FieldDescription>
+                    </Field>
+                  </FieldGroup>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
