@@ -1,7 +1,5 @@
 "use client";
-
 import { useMemo, useState } from "react";
-
 import {
   AlertCircle,
   ArrowRight,
@@ -21,12 +19,10 @@ import {
   TerminalSquare,
   XCircle,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
 import {
   Card,
   CardContent,
@@ -34,9 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Badge } from "@/components/ui/badge";
-
 import {
   Select,
   SelectContent,
@@ -44,41 +38,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
 import { Separator } from "@/components/ui/separator";
 import FeatureComingSoon from "@/components/ui/FeatureComingSoon";
+import {
+  type Report,
+  ReportStatus,
+  ReportPriority,
+  ReportCategory,
+} from "@/types/Help";
 
-// ==================================================
-// Types
-// ==================================================
-
-type ReportStatus = "open" | "in-progress" | "resolved";
-
-type ReportPriority = "low" | "medium" | "high";
-
-type ReportCategory = "bug" | "transaction" | "account" | "technical" | "other";
-
-type Report = {
-  id: string;
-  title: string;
-  description: string;
-  category: ReportCategory;
-  priority: ReportPriority;
-  status: ReportStatus;
-  createdAt: string;
-  updatedAt: string;
-};
-
-// ==================================================
 // Hardcoded data
-// ==================================================
 
 const reports: Report[] = [
   {
@@ -116,10 +91,6 @@ const reports: Report[] = [
   },
 ];
 
-// ==================================================
-// Page
-// ==================================================
-
 export default function HelpPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -136,7 +107,6 @@ export default function HelpPage() {
       return matchesSearch && matchesStatus;
     });
   }, [search, statusFilter]);
-
   return (
     <main className="min-h-screen bg-black text-foreground">
       <FeatureComingSoon />
@@ -509,7 +479,7 @@ export default function HelpPage() {
                 </CardContent>
               </Card>
             ) : (
-              filteredReports.map((report) => (
+              filteredReports.map((report: Report) => (
                 <ReportCard key={report.id} report={report} />
               ))
             )}
