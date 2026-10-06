@@ -122,7 +122,7 @@ export default function LoginForm() {
       <MultiStepLoader
         loadingStates={loadingStates}
         loading={isAuthLoading}
-        duration={1000}
+        duration={2000}
         loop={true}
       />
       <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
