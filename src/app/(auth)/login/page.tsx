@@ -92,7 +92,11 @@ export default function LoginForm() {
         const response = await api.post("/auth/users/google-signin", {
           code: codeResponse.code,
         });
-
+        toast.add({
+          type: "success",
+          title: "Logged in successfully",
+          description: "You have been successfully logged in.",
+        });
         router.replace("/dashboard");
       } catch (error) {
         setIsAuthLoading(false);

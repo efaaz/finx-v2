@@ -6,9 +6,11 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { NavMain } from "@/components/dasboard/nav-main";
-import { NavSecondary } from "@/components/dasboard/nav-secondary";
+import { NavSettings } from "@/components/dasboard/nav-Settings";
 import { NavUser } from "@/components/dasboard/nav-user";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { NavManagement } from "./nav-managemet";
+import { NavData } from "./nav-data";
 
 export function AppSidebar() {
   const {
@@ -18,8 +20,8 @@ export function AppSidebar() {
     } = useCurrentUser();
   
     const currentUser = user ?? {
-      name: "John Doe",
-      email: "john.doe@example.com",
+      name: "User",
+      email: "user@example.com",
       avatar: "",
     };
   
@@ -29,7 +31,9 @@ export function AppSidebar() {
 
       <SidebarContent className="ml-1.5 " >
         <NavMain />
-        <NavSecondary />
+        <NavManagement />
+        <NavData />
+        <NavSettings />
       </SidebarContent>
 
       <SidebarFooter className="mb-4">
