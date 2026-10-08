@@ -16,11 +16,6 @@ export default function TransactionsPage() {
             Record and review your income and spending.
           </p>
         </div>
-
-        <Button className="gap-2">
-          <Plus className="size-4" />
-          Add Transaction
-        </Button>
       </section>
 
       {/* =====================================================

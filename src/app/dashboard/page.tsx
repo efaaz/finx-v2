@@ -17,6 +17,7 @@ import {
   TrendingDown,
   TrendingUp,
   Wallet,
+  Plus,
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDashboardOverview } from "@/hooks/useDashboardOverview";
@@ -35,6 +36,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const tend = [
   {
@@ -625,12 +627,17 @@ export default function DashboardPage() {
     <main className="space-y-8 p-4 md:p-6">
       {/* Header */}
       <section>
+        <div className="flex items-center justify-between">
+          <p className="mb-2 text-sm text-muted-foreground">
+            Financial overview
+          </p>
+          <span className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CircleDollarSign className="size-4 text-violet-400" />
+            BDT
+          </span>
+        </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="mb-2 text-sm text-muted-foreground">
-              Financial overview
-            </p>
-
             <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
               Welcome, {user?.name ?? "User"}
             </h1>
@@ -639,10 +646,18 @@ export default function DashboardPage() {
               A quick look at your money, spending, and financial activity.
             </p>
           </div>
-
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <CircleDollarSign className="size-4 text-violet-400" />
-            BDT
+          <div className="flex md:justify-end justify-normal items-center gap-4">
+            <div className="">
+              <Link
+                href="/dashboard/transactions"
+                className="flex items-center gap-2"
+              >
+                <Button className="gap-2">
+                  <Plus className="size-4" />
+                  Add Transaction
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
