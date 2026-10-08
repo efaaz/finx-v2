@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { HelpCircle, Settings } from "lucide-react";
+import { HelpCircle, Settings, Tags } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -13,21 +13,16 @@ import {
 
 const items = [
   {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
-  {
-    title: "Help",
-    url: "/dashboard/help",
-    icon: HelpCircle,
-  },
+    title: "Categories",
+    url: "/dashboard/categories",
+    icon: Tags,
+  }
 ];
 
-export function NavSecondary() {
+export function NavManagement() {
   return (
     <SidebarGroup className="mt-6">
-      <SidebarGroupLabel>Account</SidebarGroupLabel>
+      <SidebarGroupLabel>Management</SidebarGroupLabel>
 
       <SidebarGroupContent>
         <SidebarMenu>

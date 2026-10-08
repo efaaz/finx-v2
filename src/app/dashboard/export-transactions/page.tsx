@@ -1,7 +1,5 @@
 "use client";
-
-import { useState } from "react";
-
+import { useState, type ReactNode } from "react";
 import {
   CalendarDays,
   Check,
@@ -17,10 +15,8 @@ import {
   RotateCcw,
   X,
 } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -28,9 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Checkbox } from "@/components/ui/checkbox";
-
 import {
   Select,
   SelectContent,
@@ -38,41 +32,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import FeatureComingSoon from "@/components/ui/FeatureComingSoon";
+import { useAvailableCategories } from "@/hooks/useAvailableCategories";
+import { api } from "@/lib/api/client";
+import { toast } from "@/components/ui/toast";
+import {
+  type ExportFormat,
+  DateRange,
+  TransactionType,
+  ExportColumn,
+} from "@/types/exportTransaction";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-// ==================================================
-// Types
-// ==================================================
-
-type ExportFormat = "csv" | "excel";
-
-type DateRange = "all" | "month" | "3months" | "year" | "custom";
-
-type TransactionType = "all" | "income" | "spending";
-
-type ExportColumn = {
-  id:
-    | "date"
-    | "type"
-    | "category"
-    | "amount"
-    | "currency"
-    | "note"
-    | "transactionId"
-    | "createdAt";
-
-  label: string;
-  description: string;
-  defaultSelected: boolean;
-};
-
-// ==================================================
 // Constants
-// ==================================================
 
 const exportColumns: ExportColumn[] = [
   {
@@ -125,52 +99,34 @@ const exportColumns: ExportColumn[] = [
   },
 ];
 
-const categories = [
-  "All categories",
-  "Food",
-  "Transport",
-  "Shopping",
-  "Bills",
-  "Entertainment",
-  "Salary",
-  "Freelance",
-];
-
-// ==================================================
-// Page
-// ==================================================
-
 export default function ExportTransactionsPage() {
-  const [dateRange, setDateRange] = useState<DateRange>("all");
+  const { data: categories = [], isLoading: isCategoriesLoading } =
+    useAvailableCategories();
+  const { data: currentUser } = useCurrentUser();
 
+  const [dateRange, setDateRange] = useState<DateRange>("all");
   const [transactionType, setTransactionType] =
     useState<TransactionType>("all");
-
-  const [category, setCategory] = useState("All categories");
-
+  const [categoryId, setCategoryId] = useState("all");
   const [startDate, setStartDate] = useState("");
-
   const [endDate, setEndDate] = useState("");
-
   const [format, setFormat] = useState<ExportFormat>("csv");
-
-  const [selectedColumns, setSelectedColumns] = useState<string[]>(
+  const [selectedColumns, setSelectedColumns] = useState<ExportColumn["id"][]>(
     exportColumns
       .filter((column) => column.defaultSelected)
       .map((column) => column.id),
   );
 
+  const [isExporting, setIsExporting] = useState(false);
   const selectedColumnCount = selectedColumns.length;
-
   const allColumnsSelected = selectedColumnCount === exportColumns.length;
-
   const noColumnsSelected = selectedColumnCount === 0;
+  const selectedCategory = categories.find(
+    (category) => category._id === categoryId,
+  );
 
-  // ----------------------------------------------
   // Column selection
-  // ----------------------------------------------
-
-  const toggleColumn = (columnId: string) => {
+  const toggleColumn = (columnId: ExportColumn["id"]) => {
     setSelectedColumns((current) => {
       if (current.includes(columnId)) {
         return current.filter((id) => id !== columnId);
@@ -188,14 +144,11 @@ export default function ExportTransactionsPage() {
     setSelectedColumns([]);
   };
 
-  // ----------------------------------------------
   // Reset
-  // ----------------------------------------------
-
   const resetFilters = () => {
     setDateRange("all");
     setTransactionType("all");
-    setCategory("All categories");
+    setCategoryId("all");
     setStartDate("");
     setEndDate("");
     setFormat("csv");
@@ -207,49 +160,82 @@ export default function ExportTransactionsPage() {
     );
   };
 
-  // ----------------------------------------------
   // Export
-  // ----------------------------------------------
-
-  const handleExport = () => {
-    if (selectedColumns.length === 0) {
+  const handleExport = async () => {
+    if (categoryId !== "all" && transactionType !== selectedCategory?.type) {
+      toast.add({
+        type: "error",
+        title: "Transection type and category type mismatch",
+        description:
+          "Please select a different transaction type for the selected category.",
+      });
       return;
     }
 
-    // Connect this later to:
-    //
-    // GET /api/v1/transactions/export
-    //
-    // Example:
-    //
-    // ?format=csv
-    // &dateRange=all
-    // &type=all
-    // &category=all
-    // &columns=date,type,category,amount,currency,note
+    if (dateRange === "custom" && (!startDate || !endDate)) {
+      return;
+    }
 
-    console.log({
-      format,
-      dateRange,
-      startDate,
-      endDate,
-      transactionType,
-      category,
-      columns: selectedColumns,
-    });
+    try {
+      setIsExporting(true);
+
+      const params = new URLSearchParams();
+
+      params.set("format", format);
+      params.set("dateRange", dateRange);
+      params.set("type", transactionType);
+      params.set("columns", selectedColumns.join(","));
+
+      if (dateRange === "custom") {
+        params.set("startDate", startDate);
+        params.set("endDate", endDate);
+      }
+
+      if (categoryId !== "all") {
+        params.set("categoryId", categoryId);
+      }
+
+      const response = await api.get("/transactions/export", {
+        params,
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], {
+        type:
+          format === "excel"
+            ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            : "text/csv;charset=utf-8;",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download =
+        format === "excel"
+          ? `finx-transactions-of-${currentUser?.name}.xlsx`
+          : `finx-transactions-of-${currentUser?.name}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Transaction export failed:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
     <main className="min-h-screen bg-black text-foreground">
-        <FeatureComingSoon/>
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* ======================================== */}
         {/* Header */}
-        {/* ======================================== */}
-
         <section className="mb-8">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/5 px-3 py-1 text-xs font-medium text-violet-300">
-            <Database className="h-3.5 w-3.5" />
+            <Database className="size-3.5" />
             Data management
           </div>
 
@@ -276,15 +262,9 @@ export default function ExportTransactionsPage() {
           </div>
         </section>
 
-        {/* ======================================== */}
         {/* Export builder */}
-        {/* ======================================== */}
-
         <div className="space-y-6">
-          {/* ====================================== */}
           {/* 1. Date range */}
-          {/* ====================================== */}
-
           <Card className="border-border bg-card">
             <CardHeader>
               <div className="flex items-start gap-3">
@@ -378,10 +358,7 @@ export default function ExportTransactionsPage() {
             </CardContent>
           </Card>
 
-          {/* ====================================== */}
           {/* 2. Filters */}
-          {/* ====================================== */}
-
           <Card className="border-border bg-card">
             <CardHeader>
               <div className="flex items-start gap-3">
@@ -403,14 +380,18 @@ export default function ExportTransactionsPage() {
 
             <CardContent>
               <div className="grid gap-5 sm:grid-cols-2">
+                {/* Transaction type */}
+
                 <div className="space-y-2">
                   <Label>Transaction type</Label>
 
                   <Select
                     value={transactionType}
-                    onValueChange={(value) =>
-                      setTransactionType(value as TransactionType)
-                    }
+                    onValueChange={(value) => {
+                      if (value) {
+                        setTransactionType(value as TransactionType);
+                      }
+                    }}
                   >
                     <SelectTrigger className="bg-black">
                       <SelectValue />
@@ -426,25 +407,37 @@ export default function ExportTransactionsPage() {
                   </Select>
                 </div>
 
+                {/* Category */}
+
                 <div className="space-y-2">
                   <Label>Category</Label>
 
                   <Select
-                    value={category}
+                    value={categoryId || "all"}
                     onValueChange={(value) => {
-                      if (value) {
-                        setCategory(value);
-                      }
+                      setCategoryId(value ?? "all");
                     }}
                   >
                     <SelectTrigger className="bg-black">
-                      <SelectValue />
+                      <SelectValue
+                        placeholder={
+                          isCategoriesLoading
+                            ? "Loading categories..."
+                            : "All categories"
+                        }
+                      >
+                        {categoryId
+                          ? selectedCategory?.categoryName
+                          : "All categories"}
+                      </SelectValue>
                     </SelectTrigger>
 
                     <SelectContent>
-                      {categories.map((item) => (
-                        <SelectItem key={item} value={item}>
-                          {item}
+                      <SelectItem value="all">All categories</SelectItem>
+
+                      {categories.map((category) => (
+                        <SelectItem key={category._id} value={category._id}>
+                          {category.categoryName}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -454,10 +447,7 @@ export default function ExportTransactionsPage() {
             </CardContent>
           </Card>
 
-          {/* ====================================== */}
-          {/* 3. Columns */}
-          {/* ====================================== */}
-
+          {/* 3. Columns Selection */}
           <Card className="border-border bg-card">
             <CardHeader>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -485,7 +475,6 @@ export default function ExportTransactionsPage() {
 
             <CardContent className="space-y-4">
               {/* Select / clear */}
-
               <div className="flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
@@ -556,11 +545,7 @@ export default function ExportTransactionsPage() {
               )}
             </CardContent>
           </Card>
-
-          {/* ====================================== */}
           {/* 4. Format */}
-          {/* ====================================== */}
-
           <Card className="border-border bg-card">
             <CardHeader>
               <div className="flex items-start gap-3">
@@ -599,10 +584,7 @@ export default function ExportTransactionsPage() {
             </CardContent>
           </Card>
 
-          {/* ====================================== */}
           {/* Export summary */}
-          {/* ====================================== */}
-
           <Card className="overflow-hidden border-violet-500/20 bg-card">
             <div className="h-1 bg-violet-500/70" />
 
@@ -639,6 +621,20 @@ export default function ExportTransactionsPage() {
                 <SummaryItem
                   label="Format"
                   value={format === "csv" ? "CSV" : "Excel"}
+                />
+              </div>
+
+              {/* Category summary */}
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <SummaryItem
+                  label="Category"
+                  value={selectedCategory?.categoryName ?? "All categories"}
+                />
+
+                <SummaryItem
+                  label="Columns"
+                  value={`${selectedColumnCount} selected`}
                 />
               </div>
 
@@ -693,27 +689,33 @@ export default function ExportTransactionsPage() {
                   variant="outline"
                   onClick={resetFilters}
                   className="border-border bg-black"
+                  disabled={isExporting}
                 >
                   Reset
                 </Button>
 
                 <Button
                   type="button"
-                  disabled={noColumnsSelected}
+                  disabled={
+                    noColumnsSelected ||
+                    isExporting ||
+                    (dateRange === "custom" && (!startDate || !endDate))
+                  }
                   onClick={handleExport}
                   className="bg-violet-600 hover:bg-violet-500"
                 >
                   <Download className="size-4" />
-                  Download {format === "csv" ? "CSV" : "Excel"}
+
+                  {isExporting
+                    ? "Exporting..."
+                    : `Download ${format === "csv" ? "CSV" : "Excel"}`}
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* ======================================== */}
         {/* Footer help */}
-        {/* ======================================== */}
 
         <div className="mt-6 flex items-start gap-3 rounded-xl border border-border bg-card p-4">
           <Info className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
@@ -726,19 +728,14 @@ export default function ExportTransactionsPage() {
               Excel transaction history.
             </p>
           </div>
-
-          <ChevronDown className="ml-auto mt-0.5 hidden size-4 text-muted-foreground sm:block" />
         </div>
       </div>
     </main>
   );
 }
 
-// ==================================================
 // Section icon
-// ==================================================
-
-function SectionIcon({ children }: { children: React.ReactNode }) {
+function SectionIcon({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-black text-violet-400">
       {children}
@@ -746,10 +743,7 @@ function SectionIcon({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ==================================================
 // Date range button
-// ==================================================
-
 function DateRangeButton({
   active,
   onClick,
@@ -757,7 +751,7 @@ function DateRangeButton({
 }: {
   active: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button
@@ -774,10 +768,7 @@ function DateRangeButton({
   );
 }
 
-// ==================================================
 // Format card
-// ==================================================
-
 function FormatCard({
   active,
   icon,
@@ -786,7 +777,7 @@ function FormatCard({
   onClick,
 }: {
   active: boolean;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
   onClick: () => void;
@@ -830,9 +821,7 @@ function FormatCard({
   );
 }
 
-// ==================================================
 // Summary item
-// ==================================================
 
 function SummaryItem({ label, value }: { label: string; value: string }) {
   return (
@@ -844,10 +833,7 @@ function SummaryItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-// ==================================================
 // Helpers
-// ==================================================
-
 function getDateRangeLabel(dateRange: DateRange) {
   switch (dateRange) {
     case "month":

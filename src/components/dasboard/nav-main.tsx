@@ -36,11 +36,6 @@ const items = [
     icon: Wallet,
   },
   {
-    title: "Categories",
-    url: "/dashboard/categories",
-    icon: Tags,
-  },
-  {
     title: "Reports",
     url: "/dashboard/reports",
     icon: BarChart3,
@@ -52,7 +47,7 @@ export function NavMain() {
 
   return (
     <SidebarGroup className="mt-2 md:mt-9">
-      <SidebarGroupLabel>Finance</SidebarGroupLabel>
+      <SidebarGroupLabel>MAIN</SidebarGroupLabel>
 
       <SidebarGroupContent>
         <SidebarMenu>
