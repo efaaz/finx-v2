@@ -1,9 +1,7 @@
 "use client";
-
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,16 +11,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
 import { formatTransactionDate } from "@/lib/formateHelper";
 import { currencies } from "@/types/currency";
 import { Plus } from "lucide-react";
-
 import {
   CreateTransactionSchema,
   type CreateTransactionInput,
 } from "@/Schema/transactionSchema";
-
 import { createTransaction } from "@/lib/api/transactions";
 import { type PostTransaction } from "@/types/transaction";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -32,10 +27,15 @@ import { useAvailableCategories } from "@/hooks/useAvailableCategories";
 
 const QuickTransection = () => {
   const {
-  data: categories = [],
-  isPending: isCategoriesLoading,
-  isError: isCategoriesError,
-} = useAvailableCategories();
+    data: categories = [],
+    isPending: isCategoriesLoading,
+    isError: isCategoriesError,
+  } = useAvailableCategories();
+
+  const selectedCategory = (categoryId: string) => {
+    const category = categories.find((category) => category._id === categoryId);
+    return category ? category.type : "";
+  };
   const queryClient = useQueryClient();
 
   const { data: user, isLoading } = useCurrentUser();
@@ -89,7 +89,15 @@ const QuickTransection = () => {
   });
 
   const onSubmit = (values: CreateTransactionInput) => {
-    console.log("SUBMIT VALUES:", values);
+    if (selectedCategory(values.categoryId) !== values.type) {
+      toast.add({
+        type: "error",
+        title: "Transaction type and category type mismatch",
+        description:
+          "Please select a different transaction type for the selected category (income/spending).",
+      });
+      return;
+    }
 
     if (!user) return;
 
@@ -113,12 +121,12 @@ const QuickTransection = () => {
           <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-full" />
               </div>
-              
+
               <Skeleton className="h-8 w-full" />
             </div>
           </CardContent>

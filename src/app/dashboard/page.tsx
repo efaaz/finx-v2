@@ -621,7 +621,6 @@ export default function DashboardPage() {
     trend,
     recentTransactions,
   } = data;
-  console.log("Dashboard trend:", trend);
   return (
     <main className="space-y-8 p-4 md:p-6">
       {/* Header */}
