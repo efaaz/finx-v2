@@ -165,7 +165,7 @@ export default function ExportTransactionsPage() {
     if (categoryId !== "all" && transactionType !== selectedCategory?.type) {
       toast.add({
         type: "error",
-        title: "Transection type and category type mismatch",
+        title: "Transaction type and category type mismatch",
         description:
           "Please select a different transaction type for the selected category.",
       });
