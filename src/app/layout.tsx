@@ -3,6 +3,8 @@ import { Geist, DM_Serif_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { Toaster } from "@/components/ui/toast";
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +35,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
         <Toaster />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
