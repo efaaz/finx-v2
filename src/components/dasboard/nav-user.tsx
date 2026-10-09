@@ -1,12 +1,7 @@
 "use client";
 import avatar from "@/assets/avatar.jpg";
 
-import {
-  ChevronsUpDown,
-  LogOut,
-  Settings,
-  User,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react";
 
 import {
   SidebarMenu,
@@ -32,17 +27,18 @@ interface User {
 import { logout } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 interface NavUserProps {
   user: User;
 }
 
 export function NavUser({ user }: NavUserProps) {
-    const router = useRouter();
-    const handleLogout = () => {
+  const router = useRouter();
+  const handleLogout = () => {
     logout();
     router.replace("/login");
-    }
+  };
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -56,13 +52,17 @@ export function NavUser({ user }: NavUserProps) {
             }
           >
             <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Image src={user.avatar? user.avatar: avatar} className="rounded-full"  alt="User Avatar" width={32} height={32} />
+              <Image
+                src={user.avatar ? user.avatar : avatar}
+                className="rounded-full"
+                alt="User Avatar"
+                width={32}
+                height={32}
+              />
             </div>
 
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">
-                {user.name}
-              </span>
+              <span className="truncate font-medium">{user.name}</span>
 
               <span className="truncate text-xs text-muted-foreground">
                 {user.email}
@@ -78,19 +78,21 @@ export function NavUser({ user }: NavUserProps) {
             className="w-[--anchor-width] min-w-56"
           >
             <DropdownMenuGroup>
-              <DropdownMenuLabel>
-                My Account
-              </DropdownMenuLabel>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
 
-              <DropdownMenuItem>
-                <User />
-                Profile
-              </DropdownMenuItem>
+              <Link href="/dashboard/settings">
+                <DropdownMenuItem>
+                  <User />
+                  Profile
+                </DropdownMenuItem>
+              </Link>
 
-              <DropdownMenuItem>
-                <Settings />
-                Settings
-              </DropdownMenuItem>
+              {/* <Link href="/dashboard/settings">
+                <DropdownMenuItem>
+                  <Settings />
+                  Settings
+                </DropdownMenuItem>
+              </Link> */}
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
@@ -98,9 +100,7 @@ export function NavUser({ user }: NavUserProps) {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <LogOut />
-                <button onClick={() => handleLogout()} >
-                  Log out
-                </button>
+                <button onClick={() => handleLogout()}>Log out</button>
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
