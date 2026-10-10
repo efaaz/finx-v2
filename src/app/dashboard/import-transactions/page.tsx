@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, type ReactNode } from "react";
 import {
   AlertCircle,
@@ -16,7 +15,6 @@ import {
   X,
   CheckSquare,
 } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,38 +35,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import FeatureComingSoon from "@/components/ui/FeatureComingSoon";
-
-// ==================================================
-// Types
-// ==================================================
-
-type ImportFormat = "csv" | "excel";
-
-type MappingKey = "date" | "type" | "category" | "amount" | "currency" | "note";
-
-type ImportMode = "skip" | "replace";
-
-type ColumnMapping = {
-  key: MappingKey;
-  label: string;
-  description: string;
-  source: string;
-  required: boolean;
-};
-
-type PreviewTransaction = {
-  date: string;
-  type: string;
-  category: string;
-  amount: string;
-  currency: string;
-  note: string;
-};
-
-// ==================================================
-// Hardcoded demo data
-// ==================================================
-
+import {
+  type ImportFormat,
+  MappingKey,
+  ImportMode,
+  ColumnMapping,
+  PreviewTransaction,
+} from "@/types/data";
 const demoFile = {
   name: "finx-transactions-2026.csv",
   size: "48.2 KB",
