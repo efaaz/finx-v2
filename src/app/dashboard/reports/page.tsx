@@ -36,65 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/api/client";
-
-// ==================================================
-// API types: match GET /api/v1/reports/overview
-// ==================================================
-
-type TrendRange = "6months" | "12months";
-
-type ApiCategory = {
-  id: string | null;
-  name: string;
-  amount: number;
-  transactions: number;
-  sharePercentage: number;
-};
-
-type SpendingCategory = ApiCategory & {
-  id: string;
-  color: string;
-  description: string;
-};
-
-type MonthlyData = {
-  monthKey: string;
-  month: string;
-  income: number;
-  spending: number;
-  netCashFlow: number;
-  incomeTransactions: number;
-  spendingTransactions: number;
-};
-
-type FinancialReport = {
-  currency: string;
-  timezone: string;
-  overview: {
-    totalIncome: number;
-    totalSpending: number;
-    netCashFlow: number;
-    incomeRemainingRate: number;
-    totalIncomeTransactions: number;
-    totalSpendingTransactions: number;
-    totalTransactions: number;
-  };
-  trend: {
-    range: TrendRange;
-    months: MonthlyData[];
-    totalIncome: number;
-    totalSpending: number;
-    netCashFlow: number;
-  };
-  categories: ApiCategory[];
-  insights: {
-    topSpendingCategory: ApiCategory | null;
-    secondSpendingCategory: ApiCategory | null;
-    topTwoCategorySharePercentage: number;
-    hasPositiveNetCashFlow: boolean;
-    hasRecordedIncome: boolean;
-  };
-};
+import { type TrendRange, ApiCategory, SpendingCategory, MonthlyData, FinancialReport  } from "@/types/ReportAnalytics";
 
 // ==================================================
 // Category presentation
@@ -156,10 +98,6 @@ function categoryPresentation(category: ApiCategory): SpendingCategory {
   };
 }
 
-// ==================================================
-// Formatting
-// ==================================================
-
 function money(value: number, currency = "BDT") {
   const formatted = new Intl.NumberFormat("en-BD", {
     maximumFractionDigits: 0,
@@ -203,10 +141,6 @@ function getApiErrorMessage(error: unknown) {
     "We couldn't load your financial reports. Please try again."
   );
 }
-
-// ==================================================
-// Page
-// ==================================================
 
 export default function ReportsPage() {
   const [trendRange, setTrendRange] = useState<TrendRange>("12months");
