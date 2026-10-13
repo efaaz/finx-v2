@@ -17,7 +17,6 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,8 +35,19 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/api/client";
-import { type TrendRange, ApiCategory, SpendingCategory, MonthlyData, FinancialReport  } from "@/types/ReportAnalytics";
-
+import {
+  type TrendRange,
+  ApiCategory,
+  SpendingCategory,
+  MonthlyData,
+  FinancialReport,
+} from "@/types/ReportAnalytics";
+import {
+  money,
+  compactMoney,
+  percentage,
+  getApiErrorMessage,
+} from "@/lib/currency";
 // ==================================================
 // Category presentation
 // Colors and guidance are UI presentation, not analytics data.
@@ -97,51 +107,6 @@ function categoryPresentation(category: ApiCategory): SpendingCategory {
       "Review the transactions in this category to understand what makes up the total. A higher amount is not automatically a problem; context and your priorities matter.",
   };
 }
-
-function money(value: number, currency = "BDT") {
-  const formatted = new Intl.NumberFormat("en-BD", {
-    maximumFractionDigits: 0,
-  }).format(Number.isFinite(value) ? value : 0);
-
-  if (currency === "BDT") return `৳${formatted}`;
-
-  try {
-    return new Intl.NumberFormat("en", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(Number.isFinite(value) ? value : 0);
-  } catch {
-    return `${currency} ${formatted}`;
-  }
-}
-
-function compactMoney(value: number, currency = "BDT") {
-  const formatted = new Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(Number.isFinite(value) ? value : 0);
-
-  return currency === "BDT" ? `৳${formatted}` : `${currency} ${formatted}`;
-}
-
-function percentage(value: number) {
-  return `${(Number.isFinite(value) ? value : 0).toFixed(1)}%`;
-}
-
-function getApiErrorMessage(error: unknown) {
-  const maybeAxiosError = error as {
-    response?: { data?: { message?: string } };
-    message?: string;
-  };
-
-  return (
-    maybeAxiosError?.response?.data?.message ||
-    maybeAxiosError?.message ||
-    "We couldn't load your financial reports. Please try again."
-  );
-}
-
 export default function ReportsPage() {
   const [trendRange, setTrendRange] = useState<TrendRange>("12months");
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");
